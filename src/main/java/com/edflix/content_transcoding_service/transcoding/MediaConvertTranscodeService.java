@@ -4,12 +4,17 @@ import java.util.Collections;
 import java.util.Map;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
+
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 import software.amazon.awssdk.services.mediaconvert.MediaConvertClient;
 import software.amazon.awssdk.services.mediaconvert.model.*;
 
 @Service
 public class MediaConvertTranscodeService {
+
+        @Value("${aws.mediaconvert.role.arn}")
+        private String mediaConvertRoleArn;
 
     private final MediaConvertClient mediaConvertClient;
     private final ObjectMapper objectMapper;
@@ -79,7 +84,7 @@ public class MediaConvertTranscodeService {
 
             // Create the job request with userMetadata
             CreateJobRequest createJobRequest = CreateJobRequest.builder()
-                    .role("arn:aws:iam::125309500155:role/service-role/MediaConvert_Default_Role")
+                    .role(mediaConvertRoleArn)
                     .settings(jobSettings)
                     .userMetadata(userMetadata)
                     .build();
