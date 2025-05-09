@@ -21,7 +21,7 @@ public class ContentTranscodingConsumer {
     @SqsListener("${aws.sqs.content-transcoding-queue-url}")
     public void receiveMessage(String message) {
         try {
-            // Validate if the message is in JSON format
+            // Parse the message into TranscodeRequest
             TranscodeRequest transcodeRequest = objectMapper.readValue(message, TranscodeRequest.class);
 
             String url = transcodeRequest.getUrl();
@@ -31,9 +31,9 @@ public class ContentTranscodingConsumer {
                 throw new IllegalArgumentException("TranscodeRequest must contain valid 'url' and 'contentProviderId' fields");
             }
 
-            // Delegate transcode job creation to the service
-            mediaConvertTranscodeService.createTranscodeJob(url, contentProviderId);
-            System.out.println("Transcode job created successfully for URL: " + url);
+            // Delegate transcode job creation to the service with full TranscodeRequest
+            mediaConvertTranscodeService.createTranscodeJob(url, contentProviderId, transcodeRequest);
+            System.out.println("Consumer - Transcode job created successfully for URL: " + url);
 
         } catch (JsonProcessingException e) {
             System.err.println("Invalid JSON message: " + message);

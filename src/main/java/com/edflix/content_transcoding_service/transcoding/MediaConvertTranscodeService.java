@@ -1,7 +1,9 @@
 package com.edflix.content_transcoding_service.transcoding;
 
 import java.util.Collections;
+import java.util.Map;
 
+import com.fasterxml.jackson.databind.ObjectMapper;
 import org.springframework.stereotype.Service;
 import software.amazon.awssdk.services.mediaconvert.MediaConvertClient;
 import software.amazon.awssdk.services.mediaconvert.model.*;
@@ -10,12 +12,14 @@ import software.amazon.awssdk.services.mediaconvert.model.*;
 public class MediaConvertTranscodeService {
 
     private final MediaConvertClient mediaConvertClient;
+    private final ObjectMapper objectMapper;
 
-    public MediaConvertTranscodeService(MediaConvertClient mediaConvertClient) {
+    public MediaConvertTranscodeService(MediaConvertClient mediaConvertClient, ObjectMapper objectMapper) {
         this.mediaConvertClient = mediaConvertClient;
+        this.objectMapper = objectMapper;
     }
 
-    public void createTranscodeJob(String url, String contentProviderId) {
+    public void createTranscodeJob(String url, String contentProviderId, TranscodeRequest transcodeRequest) {
         try {
             // Define output settings
             Output output = Output.builder()
@@ -70,15 +74,19 @@ public class MediaConvertTranscodeService {
                     .outputGroups(outputGroup)
                     .build();
 
-            // Create the job request
+            // Convert TranscodeRequest to userMetadata
+            Map<String, String> userMetadata = objectMapper.convertValue(transcodeRequest, Map.class);
+
+            // Create the job request with userMetadata
             CreateJobRequest createJobRequest = CreateJobRequest.builder()
                     .role("arn:aws:iam::125309500155:role/service-role/MediaConvert_Default_Role")
                     .settings(jobSettings)
+                    .userMetadata(userMetadata)
                     .build();
 
             // Submit the job
             mediaConvertClient.createJob(createJobRequest);
-            System.out.println("Transcode job created successfully for URL: " + url);
+            System.out.println("Service - Transcode job created successfully for URL: " + url);
         } catch (Exception e) {
             System.err.println("Error occurred while creating transcode job for URL: " + url);
             e.printStackTrace();
