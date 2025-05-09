@@ -16,7 +16,10 @@ public class MediaConvertTranscodeService {
         @Value("${aws.mediaconvert.role.arn}")
         private String mediaConvertRoleArn;
 
-    private final MediaConvertClient mediaConvertClient;
+        @Value("${aws.s3.destination.bucket.name}")
+        private String s3DestinationBucketName;
+
+        private final MediaConvertClient mediaConvertClient;
     private final ObjectMapper objectMapper;
 
     public MediaConvertTranscodeService(MediaConvertClient mediaConvertClient, ObjectMapper objectMapper) {
@@ -59,7 +62,7 @@ public class MediaConvertTranscodeService {
                     .outputGroupSettings(OutputGroupSettings.builder()
                             .type(OutputGroupType.FILE_GROUP_SETTINGS)
                             .fileGroupSettings(FileGroupSettings.builder()
-                                    .destination("s3://edflix/" + contentProviderId + "/")
+                                    .destination("s3://"+s3DestinationBucketName+"/" + contentProviderId + "/")
                                     .build())
                             .build())
                     .outputs(output)
