@@ -44,9 +44,9 @@ public class MediaConvertTranscodeService {
                                     .build())
                             .build())
                     .audioDescriptions(AudioDescription.builder()
-                            .audioSourceName("Audio Selector 1") // Link to the audio selector
+                            .audioSourceName("Audio Selector 1")
                             .codecSettings(AudioCodecSettings.builder()
-                                    .codec(AudioCodec.AAC) // Changed to AAC for compatibility
+                                    .codec(AudioCodec.AAC)
                                     .aacSettings(AacSettings.builder()
                                             .bitrate(96000)
                                             .codingMode(AacCodingMode.CODING_MODE_2_0)
@@ -83,7 +83,7 @@ public class MediaConvertTranscodeService {
                     .build();
 
             // Convert TranscodeRequest to userMetadata
-            Map<String, String> userMetadata = objectMapper.convertValue(transcodeRequest, Map.class);
+            Map<String, String> userMetadata = objectMapper.convertValue(transcodeRequest, new com.fasterxml.jackson.core.type.TypeReference<Map<String, String>>() {});
 
             // Create the job request with userMetadata
             CreateJobRequest createJobRequest = CreateJobRequest.builder()

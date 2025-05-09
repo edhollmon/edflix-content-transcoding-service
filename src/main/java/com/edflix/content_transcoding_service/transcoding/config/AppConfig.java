@@ -1,4 +1,4 @@
-package com.edflix.content_transcoding_service.config;
+package com.edflix.content_transcoding_service.transcoding.config;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 import org.springframework.context.annotation.Bean;
